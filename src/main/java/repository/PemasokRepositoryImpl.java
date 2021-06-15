@@ -1,4 +1,4 @@
-package Repository;
+package repository;
 
 import entity.Pemasok;
 
@@ -22,12 +22,13 @@ public class PemasokRepositoryImpl implements PemasokRepository{
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql);
+             ResultSet resultSet = statement.executeQuery(sql)
         ) {
 
             List<Pemasok> list = new ArrayList<>();
             while (resultSet.next()){
                 Pemasok pemasok = new Pemasok();
+                pemasok.setId(resultSet.getString("id"));
                 pemasok.setKdPemasok(resultSet.getString("kdpemasok"));
                 pemasok.setNmPemasok(resultSet.getString("nmpemasok"));
                 pemasok.setAlmPemasok1(resultSet.getString("almpemasok1"));
@@ -48,19 +49,20 @@ public class PemasokRepositoryImpl implements PemasokRepository{
     }
 
     @Override
-    public Pemasok[] getById(String KdBrg) {
-        String sql = "select * from Pemasok where kdpemasok = ?";
+    public Pemasok[] getById(String id) {
+        String sql = "select * from Pemasok where id = ?";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, KdBrg);
+            statement.setString(1, id);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     Pemasok pemasok = new Pemasok();
                     List<Pemasok> list = new ArrayList<>();
+                    pemasok.setId(resultSet.getString("id"));
                     pemasok.setKdPemasok(resultSet.getString("kdpemasok"));
                     pemasok.setNmPemasok(resultSet.getString("nmpemasok"));
                     pemasok.setAlmPemasok1(resultSet.getString("almpemasok1"));
@@ -87,19 +89,20 @@ public class PemasokRepositoryImpl implements PemasokRepository{
 
     @Override
     public int add(Pemasok pemasok) {
-        String sql = "INSERT INTO Pemasok(kdpemasok,nmpemasok,almpemasok1,almpemasok2,emailpemasok) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO Pemasok(id,kdpemasok,nmpemasok,almpemasok1,almpemasok2,emailpemasok) VALUES (?,?,?,?,?,?)";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, pemasok.getKdPemasok());
-            statement.setString(2, pemasok.getNmPemasok());
-            statement.setString(3, pemasok.getAlmPemasok1());
-            statement.setString(4, pemasok.getAlmPemasok2());
-            statement.setString(5, pemasok.getEmailPemasok());
-            int rows = statement.executeUpdate();
-            return rows;
+            statement.setString(1, pemasok.getId());
+            statement.setString(2, pemasok.getKdPemasok());
+            statement.setString(3, pemasok.getNmPemasok());
+            statement.setString(4, pemasok.getAlmPemasok1());
+            statement.setString(5, pemasok.getAlmPemasok2());
+            statement.setString(6, pemasok.getEmailPemasok());
+
+            return statement.executeUpdate();
 
         } catch (SQLException exception) {
             //throw new RuntimeException(exception);
@@ -109,16 +112,16 @@ public class PemasokRepositoryImpl implements PemasokRepository{
     }
 
     @Override
-    public int removeById(String KdPemasok) {
-        String sql = "DELETE FROM Pemasok WHERE KdPemasok = ?";
+    public int removeById(String id) {
+        String sql = "DELETE FROM Pemasok WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, KdPemasok);
-            int rows = statement.executeUpdate();
-            return rows;
+            statement.setString(1, id);
+
+            return statement.executeUpdate();
         } catch (SQLException exception) {
             //throw new RuntimeException(exception);
             System.out.println("Pesan eror : "+exception);
@@ -129,24 +132,25 @@ public class PemasokRepositoryImpl implements PemasokRepository{
     @Override
     public int updateById(Pemasok pemasok) {
         String sql = "update Pemasok " +
-                "set nmpemasok = ? ,"+
+                "set kdpemasok = ? ,"+
+                "nmpemasok = ? ,"+
                 "almpemasok1 = ? ,"+
                 "almpemasok2 = ? ,"+
                 "emailpemasok = ? "+
-                "WHERE kdpemasok = ?";
+                "WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, pemasok.getNmPemasok());
-            statement.setString(2, pemasok.getAlmPemasok1());
-            statement.setString(3, pemasok.getAlmPemasok2());
-            statement.setString(4, pemasok.getEmailPemasok());
-            statement.setString(5, pemasok.getKdPemasok());
+            statement.setString(1, pemasok.getKdPemasok());
+            statement.setString(2, pemasok.getNmPemasok());
+            statement.setString(3, pemasok.getAlmPemasok1());
+            statement.setString(4, pemasok.getAlmPemasok2());
+            statement.setString(5, pemasok.getEmailPemasok());
+            statement.setString(6, pemasok.getId());
 
-            int rows = statement.executeUpdate();
-            return rows;
+            return statement.executeUpdate();
         } catch (SQLException exception) {
             System.out.println("Pesan eror : "+exception);
             return -1;

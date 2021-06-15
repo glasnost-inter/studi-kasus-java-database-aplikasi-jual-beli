@@ -2,6 +2,7 @@ package entity;
 
 public class Pemasok {
 
+    private String id;
     private String KdPemasok;
     private String NmPemasok;
     private String AlmPemasok1;
@@ -9,6 +10,14 @@ public class Pemasok {
     private String EmailPemasok;
 
     public Pemasok() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getKdPemasok() {

@@ -2,6 +2,8 @@ package entity;
 
 public class Barang {
 
+    private String id;
+
     private String KdBrg;
 
     private String NmBrg;
@@ -11,6 +13,14 @@ public class Barang {
     private Integer Jml;
 
     public Barang() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getKdBrg() {
@@ -44,4 +54,5 @@ public class Barang {
     public void setJml(Integer jml) {
         this.Jml = jml;
     }
+
 }

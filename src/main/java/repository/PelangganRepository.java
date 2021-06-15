@@ -1,4 +1,4 @@
-package Repository;
+package repository;
 
 import entity.Pelanggan;
 
@@ -6,11 +6,11 @@ public interface PelangganRepository {
 
     Pelanggan[] getAll();
 
-    Pelanggan[] getById(String KdPelanggan);
+    Pelanggan[] getById(String id);
 
     int add(Pelanggan pelanggan);
 
-    int removeById(String KdPelanggan);
+    int removeById(String id);
 
     int updateById(Pelanggan pelanggan);
 

@@ -2,6 +2,7 @@ package entity;
 
 public class Pelanggan {
 
+    private String id;
     private String KdPelanggan;
     private String NmPelanggan;
     private String AlmPelanggan1;
@@ -9,6 +10,14 @@ public class Pelanggan {
     private String EmailPelanggan;
 
     public Pelanggan() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getKdPelanggan() {

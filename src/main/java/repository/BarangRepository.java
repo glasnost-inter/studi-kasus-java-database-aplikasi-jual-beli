@@ -1,4 +1,4 @@
-package Repository;
+package repository;
 
 import entity.Barang;
 
@@ -6,11 +6,11 @@ public interface BarangRepository {
 
     Barang[] getAll();
 
-    Barang[] getById(String KdBrg);
+    Barang[] getById(String id);
 
     int add(Barang barang);
 
-    int removeById(String KdBrg);
+    int removeById(String id);
 
     int updateById(Barang barang);
 }

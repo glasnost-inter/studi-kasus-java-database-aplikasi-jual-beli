@@ -1,4 +1,4 @@
-package Repository;
+package repository;
 
 import entity.Barang;
 
@@ -22,12 +22,14 @@ public class BarangRepositoryImpl implements BarangRepository{
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql);
+             ResultSet resultSet = statement.executeQuery(sql)
         ) {
 
             List<Barang> list = new ArrayList<>();
             while (resultSet.next()){
                 Barang barang = new Barang();
+
+                barang.setId(resultSet.getString("id"));
                 barang.setKdBrg(resultSet.getString("kdbrg"));
                 barang.setNmBrg(resultSet.getString("nmbrg"));
                 barang.setKdSat(resultSet.getString("kdsat"));
@@ -47,19 +49,20 @@ public class BarangRepositoryImpl implements BarangRepository{
     }
 
     @Override
-    public Barang[] getById(String KdBrg) {
-        String sql = "select * from BARANG where KdBrg = ?";
+    public Barang[] getById(String id) {
+        String sql = "select * from BARANG where id = ?";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, KdBrg);
+            statement.setString(1, id);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     Barang barang = new Barang();
                     List<Barang> list = new ArrayList<>();
+                    barang.setId(resultSet.getString("id"));
                     barang.setKdBrg(resultSet.getString("kdbrg"));
                     barang.setNmBrg(resultSet.getString("nmbrg"));
                     barang.setKdSat(resultSet.getString("kdsat"));
@@ -85,18 +88,19 @@ public class BarangRepositoryImpl implements BarangRepository{
 
     @Override
     public int add(Barang barang) {
-        String sql = "INSERT INTO barang(kdbrg,nmbrg,kdsat,jml) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO barang(id,kdbrg,nmbrg,kdsat,jml) VALUES (?,?,?,?,?)";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, barang.getKdBrg());
-            statement.setString(2, barang.getNmBrg());
-            statement.setString(3, barang.getKdSat());
-            statement.setInt(4, barang.getJml());
-            int rows = statement.executeUpdate();
-            return rows;
+            statement.setString(1, barang.getId());
+            statement.setString(2, barang.getKdBrg());
+            statement.setString(3, barang.getNmBrg());
+            statement.setString(4, barang.getKdSat());
+            statement.setInt(5, barang.getJml());
+
+            return statement.executeUpdate();
 
         } catch (SQLException exception) {
             //throw new RuntimeException(exception);
@@ -106,16 +110,15 @@ public class BarangRepositoryImpl implements BarangRepository{
     }
 
     @Override
-    public int removeById(String KdBrg) {
-        String sql = "DELETE FROM barang WHERE kdbrg = ?";
+    public int removeById(String id) {
+        String sql = "DELETE FROM barang WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, KdBrg);
-            int rows = statement.executeUpdate();
-            return rows;
+            statement.setString(1, id);
+            return statement.executeUpdate();
         } catch (SQLException exception) {
             //throw new RuntimeException(exception);
             System.out.println("Pesan eror : "+exception);
@@ -126,21 +129,23 @@ public class BarangRepositoryImpl implements BarangRepository{
     @Override
     public int updateById(Barang barang) {
         String sql = "update barang " +
-                     "set nmbrg = ? ,"+
+                     "set kdbrg = ? ,"+
+                         "nmbrg = ? ,"+
                          "kdsat = ? ,"+
                          "jml = ? "+
-                     "WHERE kdbrg = ?";
+                     "WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, barang.getNmBrg());
-            statement.setString(2, barang.getKdSat());
-            statement.setInt(3, barang.getJml());
-            statement.setString(4, barang.getKdBrg());
-            int rows = statement.executeUpdate();
-            return rows;
+            statement.setString(1, barang.getKdBrg());
+            statement.setString(2, barang.getNmBrg());
+            statement.setString(3, barang.getKdSat());
+            statement.setInt(4, barang.getJml());
+            statement.setString(5, barang.getId());
+
+            return statement.executeUpdate();
         } catch (SQLException exception) {
             System.out.println("Pesan eror : "+exception);
             return -1;
