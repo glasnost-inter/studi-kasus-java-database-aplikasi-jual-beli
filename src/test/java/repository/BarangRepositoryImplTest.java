@@ -307,8 +307,4 @@ public class BarangRepositoryImplTest {
         assertTrue(barangs.length > 0);
     }
 
-    @AfterEach
-    void tearDown() {
-        dataSource.close();
-    }
 }

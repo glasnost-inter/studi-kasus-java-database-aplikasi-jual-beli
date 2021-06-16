@@ -1,7 +1,6 @@
 package repository;
 
 import com.zaxxer.hikari.HikariDataSource;
-import entity.Barang;
 import entity.Pelanggan;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -241,11 +240,6 @@ public class PelangganRepositoryImplTest {
 
         Pelanggan[] pelanggans = pelangganRepository.getById(strUUID);
         assertTrue(pelanggans.length > 0);
-    }
-
-    @AfterEach
-    void tearDown() {
-        dataSource.close();
     }
 
 }
