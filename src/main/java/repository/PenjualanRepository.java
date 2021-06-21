@@ -4,7 +4,7 @@ import entity.Penjualan;
 
 public interface PenjualanRepository {
     Penjualan[] getAll();
-    
+
     Penjualan[] getById(String id);
 
     int add(Penjualan penjualan);
