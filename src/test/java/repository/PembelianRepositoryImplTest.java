@@ -8,102 +8,116 @@ import org.junit.jupiter.api.Test;
 import util.CodeGenerator;
 import util.DatabaseUtil;
 
-import java.util.Date;
 import java.util.UUID;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PembelianRepositoryImplTest {
     private HikariDataSource dataSource;
+    private Pembelian pembelian;
     private PembelianRepository pembelianRepository;
+
+    private Pemasok pemasok;
     private PemasokRepository pemasokRepository;
+
+    private Date date;
+    private java.sql.Date sqlDate;
 
     @BeforeEach
     void setUp() {
         dataSource = DatabaseUtil.getDataSource();
+
+        pembelian = new Pembelian();
         pembelianRepository = new PembelianRepositoryImpl(dataSource);
+        pembelianRepository.removeAll();
+
+        pemasok = new Pemasok();
         pemasokRepository = new PemasokRepositoryImpl(dataSource);
+        pemasokRepository.removeAll();
+
+        date = new Date();
+        sqlDate = new java.sql.Date(date.getTime());
     }
 
     @Test
-    void testAdd_success() {
+    void testAddSuccess() {
 
-        Pemasok pemasok = new Pemasok();
-        var strPemasokId = UUID.randomUUID().toString();
-        pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Jaya Baru Toko"));
-        pemasok.setNmPemasok("Jaya Baru Toko");
-        pemasok.setAlmPemasok1("Bau Messepee");
-        pemasok.setAlmPemasok2("Pongtiku 5 A");
-        pemasok.setEmailPemasok("jaya.baru.toko@gmail.com");
+        /*insert master 1*/
+        var strPemasokId1 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId1);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Puan Amal Hayati"));
+        pemasok.setNmPemasok("Puan Amal Hayati");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("puan.amal.hayati@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
-        Pembelian pembelian = new Pembelian();
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 
-        pembelian.setId(UUID.randomUUID().toString());
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Frans Kaiscpo"));
-        pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok(strPemasokId);
+        var strPemasokId2 = UUID.randomUUID().toString();
 
-        result = pembelianRepository.add(pembelian);
-        assertEquals(1,result);
-
-    }
-
-    @Test
-    void testAdd_failed() {
-        /*
-        begin memastikan referensial nyala
-         */
-
-        Pembelian pembelian = new Pembelian();
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-
-        pembelian.setId(UUID.randomUUID().toString());
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Bernie Madoff"));
-        pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok("WrongSupplierCode");
-
-        var result = pembelianRepository.add(pembelian);
-        assertEquals(-1,result);
-
-        /*
-        end memastikan referensial nyala
-         */
-
-        /*
-        begin memastikan primary key pembelian
-         */
-
-        Pemasok pemasok = new Pemasok();
-        var strPemasokId = UUID.randomUUID().toString();
-        pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Garuda Indonesia PT Persero"));
-        pemasok.setNmPemasok("Garuda Indonesia PT Persero");
-        pemasok.setAlmPemasok1("Bandara Frans Kaiscpo");
-        pemasok.setAlmPemasok2("Jl Flamboyan");
-        pemasok.setEmailPemasok("garuda.indonesia@gmail.com");
+        pemasok.setId(strPemasokId2);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Yayasan Pulih"));
+        pemasok.setNmPemasok("Yayasan Pulih");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("yayasan.pulih@gmail.com");
 
         result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
-        var strPembelianId = UUID.randomUUID().toString();
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Kon Marry"));
+        /*insert master 1*/
+
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Romelu Lukaku"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId1);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Harry Kane"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId2);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+    }
+
+    @Test
+    void testAddFailedToViolatePK() {
+
+        /*insert master 1*/
+        var strPemasokId = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Majelis Kesejahteraan Sosial"));
+        pemasok.setNmPemasok("Majelis Kesejahteraan Sosial");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("majelis.kesejahteraan.sosial@gmail.com");
+
+        var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+        /*insert master 1*/
+
+        var strUUID = UUID.randomUUID().toString();
+
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Bruno Fernandes"));
         pembelian.setTglPembelian(sqlDate);
         pembelian.setKdPemasok(strPemasokId);
 
         result = pembelianRepository.add(pembelian);
         assertEquals(1,result);
 
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Jarrett Allen"));
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Son Heung-min"));
         pembelian.setTglPembelian(sqlDate);
         pembelian.setKdPemasok(strPemasokId);
 
@@ -112,59 +126,115 @@ public class PembelianRepositoryImplTest {
     }
 
     @Test
-    void testDelete_success() {
-        Pemasok pemasok = new Pemasok();
+    void testAddFailedParentKeyNotFound() {
 
+        /*insert master 1*/
         var strPemasokId = UUID.randomUUID().toString();
+
         pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK", "PSKBS Kuta Binjei"));
-        pemasok.setNmPemasok("PSKBS Kuta Binjei");
-        pemasok.setAlmPemasok1("Pasar baru, kec.Kedondong");
-        pemasok.setAlmPemasok2("kab.Pesawaran, prov.Lampung");
-        pemasok.setEmailPemasok("pskbs.kuta.binjei@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","HWDI"));
+        pemasok.setNmPemasok("HWDI");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("hwdi@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
-        assertEquals(1, result);
+        assertEquals(1,result);
+        /*insert master 1*/
 
-        Pembelian pembelian = new Pembelian();
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        var strUUID = UUID.randomUUID().toString();
 
-        var strPembelianId = UUID.randomUUID().toString();
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Leroy Sané"));
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Alphonso Davies"));
         pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok(strPemasokId);
+        pembelian.setKdPemasok("WrongParentId");
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(-1,result);
+    }
+
+    @Test
+    void testAddFailedToViolateUniqConst() {
+
+        /*insert master 1*/
+
+        /*insert master 1*/
+
+        /*insert child 1*/
+
+        /*insert child 1*/
+
+        /*insert child 1 with same value column to violate uniq*/
+
+        /*insert child 1 with same value column to violate uniq*/
+
+    }
+
+
+    @Test
+    void testDeleteSuccess() {
+
+        /*insert master 1*/
+        var strPemasokId1 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId1);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","SBMI Pusat"));
+        pemasok.setNmPemasok("SBMI Pusat");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("sbmi.pusat@gmail.com");
+
+        var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        var strPemasokId2 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId2);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","OPSI DKI"));
+        pemasok.setNmPemasok("OPSI DKI");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("opsi.dki@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        /*insert master 1*/
+
+        var strUUID = UUID.randomUUID().toString();
+
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Ciro Immobile"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId1);
 
         result = pembelianRepository.add(pembelian);
         assertEquals(1,result);
 
-        result = pembelianRepository.removeById(strPembelianId);
+        result = pembelianRepository.removeById(strUUID);
         assertEquals(1,result);
-
     }
 
     @Test
-    void testDelete_failed() {
-        Pemasok pemasok = new Pemasok();
+    void testDeleteFailedIdNotFound() {
+
+        /*insert master 1*/
         var strPemasokId = UUID.randomUUID().toString();
+
         pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Peureulak Raya"));
-        pemasok.setNmPemasok("Peureulak Raya");
-        pemasok.setAlmPemasok1("Jalan sangga buana II");
-        pemasok.setAlmPemasok2("selatan no 10 palangkaraya");
-        pemasok.setEmailPemasok("peureulak.raya@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","DPP Wanita Katolik RI"));
+        pemasok.setNmPemasok("DPP Wanita Katolik RI");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("dpp.wanita.katolik.ri@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
-        Pembelian pembelian = new Pembelian();
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        /*insert master 1*/
 
-        var strPembelianId = UUID.randomUUID().toString();
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Marcel Sabitzer"));
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Zlatan Ibrahimovic"));
         pembelian.setTglPembelian(sqlDate);
         pembelian.setKdPemasok(strPemasokId);
 
@@ -176,177 +246,373 @@ public class PembelianRepositoryImplTest {
     }
 
     @Test
-    void testUpdate_success() {
-        Pemasok pemasok = new Pemasok();
+    void testDeleteFailedChildFound() {
 
+        /*insert master 1*/
         var strPemasokId = UUID.randomUUID().toString();
+
         pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK", "Leicester City"));
-        pemasok.setNmPemasok("Leicester City");
-        pemasok.setAlmPemasok1("Jln.manggis 4 no.14");
-        pemasok.setAlmPemasok2("perumnas II parungpanjang,bogor");
-        pemasok.setEmailPemasok("leicester.city@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","LENSA Sukabumi"));
+        pemasok.setNmPemasok("LENSA Sukabumi");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lensa.sukabumi@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
-        assertEquals(1, result);
+        assertEquals(1,result);
 
-        Pembelian pembelian = new Pembelian();
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        /*insert master 1*/
 
-        var strPembelianId = UUID.randomUUID().toString();
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Virgil van Dijk"));
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Becker Alisson"));
         pembelian.setTglPembelian(sqlDate);
         pembelian.setKdPemasok(strPemasokId);
 
         result = pembelianRepository.add(pembelian);
         assertEquals(1,result);
 
-        strPemasokId = UUID.randomUUID().toString();
-        pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK", "YAYASAN HARAPAN IBU PAPUA"));
-        pemasok.setNmPemasok("YAYASAN HARAPAN IBU PAPUA");
-        pemasok.setAlmPemasok1("Jl.Ahmad Wongso Kel.Madurejo");
-        pemasok.setAlmPemasok2("Pangkalan Bun Kalimantan Tengah");
-        pemasok.setEmailPemasok("yayasan.harapan.ibu.papua@gmail.com");
+        result = pemasokRepository.removeById(strPemasokId);
+        assertEquals(-1,result);
+    }
+
+    @Test
+    void testUpdateSuccess() {
+
+        /*insert master 1*/
+        var strPemasokId1 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId1);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","SAPA Institut"));
+        pemasok.setNmPemasok("SAPA Institut");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("sapa.institut@gmail.com");
+
+        var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        var strPemasokId2 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId2);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","WCC Mawar Balqis"));
+        pemasok.setNmPemasok("WCC Mawar Balqis");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("wcc.mawar.balqis@gmail.com");
 
         result = pemasokRepository.add(pemasok);
-        assertEquals(1, result);
+        assertEquals(1,result);
+        /*insert master 1*/
 
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Bruno Fernandes"));
+        var strUUID = UUID.randomUUID().toString();
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Raheem Sterling"));
         pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok(strPemasokId);
+        pembelian.setKdPemasok(strPemasokId1);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Jan Oblak"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId1);
+
 
         result = pembelianRepository.updateById(pembelian);
         assertEquals(1,result);
     }
 
     @Test
-    void testUpdate_failed() {
-        Pemasok pemasok = new Pemasok();
+    void testUpdateFailedIdNotFound() {
 
-        var strPemasokId = UUID.randomUUID().toString();
-        pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","LBH Apik Jakarta"));
-        pemasok.setNmPemasok("LBH Apik Jakarta");
-        pemasok.setAlmPemasok1("Dusun Batu Mangkung, Desa Ungga");
-        pemasok.setAlmPemasok2("Praya Barat Daya, Lombok Tengah. NTB");
-        pemasok.setEmailPemasok("lbh.apik.jakarta@gmail.com");
+        /*insert master 1*/
+        var strPemasokId1 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId1);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","WCC Durebang Pasundan"));
+        pemasok.setNmPemasok("WCC Durebang Pasundan");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("wcc.durebang.pasundan@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
-        Pembelian pembelian = new Pembelian();
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        var strPemasokId2 = UUID.randomUUID().toString();
 
-        var strPembelianId = UUID.randomUUID().toString();
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Jack Grealish"));
+        pemasok.setId(strPemasokId2);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","SBMI Karawang"));
+        pemasok.setNmPemasok("SBMI Karawang");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("sbmi.karawang@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+        /*insert master 1*/
+
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Jadon Sancho"));
         pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok(strPemasokId);
+        pembelian.setKdPemasok(strPemasokId1);
 
         result = pembelianRepository.add(pembelian);
         assertEquals(1,result);
 
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Diogo Jota"));
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Timo Werner"));
         pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok("WrongSupplierID");
+        pembelian.setKdPemasok(strPemasokId2);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","David Alaba"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok("WrongParentId");
+
+
+        result = pembelianRepository.updateById(pembelian);
+        assertEquals(0,result);
+    }
+
+
+    @Test
+    void testUpdateFailedParentNotFound() {
+
+        /*insert master 1*/
+        var strPemasokId1 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId1);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Puan Amal Hayati Cipasung"));
+        pemasok.setNmPemasok("Puan Amal Hayati Cipasung");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("puan.amal.hayati.cipasung@gmail.com");
+
+        var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        var strPemasokId2 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId2);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Jari Relawan Independen"));
+        pemasok.setNmPemasok("Jari Relawan Independen");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("yayasan.jari.relawan.independen@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+        /*insert master 1*/
+
+        var strUUID = UUID.randomUUID().toString();
+
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Alejandro Papu Gómez"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId1);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Jordan Henderson"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId2);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Andrew Robertson"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok("WrongParentId");
+
 
         result = pembelianRepository.updateById(pembelian);
         assertEquals(-1,result);
     }
 
     @Test
-    void testGetById_success() {
-        Pemasok pemasok = new Pemasok();
+    void testUpdateFailedToViolateUniqConst() {
 
-        var strPemasokId = UUID.randomUUID().toString();
+        /*insert master 1*/
 
-        pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK", "WCC BALI"));
-        pemasok.setNmPemasok("WCC BALI");
-        pemasok.setAlmPemasok1("Jl tarmidi no 49");
-        pemasok.setAlmPemasok2("samarinda Kalimantan timur");
-        pemasok.setEmailPemasok("wcc.bali@gmail.com");
+        /*insert master 1*/
 
-        var result = pemasokRepository.add(pemasok);
-        assertEquals(1, result);
+        /*insert child 1*/
 
-        Pembelian pembelian = new Pembelian();
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        /*insert child 1*/
 
-        var strPembelianId = UUID.randomUUID().toString();
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Sergio Agüero"));
-        pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok(strPemasokId);
+        /*insert child 1 with same value column to violate uniq*/
 
-        result = pembelianRepository.add(pembelian);
-        assertEquals(1,result);
-
-        Pembelian[] pembelians = pembelianRepository.getById(strPembelianId);
-        assertEquals(1,pembelians.length);
+        /*insert child 1 with same value column to violate uniq*/
 
     }
 
     @Test
-    void testGetAll_success() {
+    void testGetByIdSuccess() {
 
-        Pemasok pemasok = new Pemasok();
+        /*insert master 1*/
+        var strPemasokId1 = UUID.randomUUID().toString();
 
-        var strPemasokId = UUID.randomUUID().toString();
-
-        pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK", "ALIANSI PEREMPUAN SULAWESI TENGGARA"));
-        pemasok.setNmPemasok("ALIANSI PEREMPUAN SULAWESI TENGGARA");
-        pemasok.setAlmPemasok1("Ds. Mejasem Timur");
-        pemasok.setAlmPemasok2("Kec. Kramat Kab. Tegal");
-        pemasok.setEmailPemasok("aliansi.perempuan.sulawesi.tenggara@gmail.com");
+        pemasok.setId(strPemasokId1);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","LBH Apik Aceh"));
+        pemasok.setNmPemasok("LBH Apik Aceh");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lbh.apik.aceh@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
-        Pembelian pembelian = new Pembelian();
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        var strPemasokId2 = UUID.randomUUID().toString();
 
-        var strPembelianId = UUID.randomUUID().toString();
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Dries Mertens"));
-        pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok(strPemasokId);
-
-        result = pembelianRepository.add(pembelian);
-        assertEquals(1,result);
-
-        strPemasokId = UUID.randomUUID().toString();
-
-        pemasok.setId(strPemasokId);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK", "Bayern Munich"));
-        pemasok.setNmPemasok("Bayern Munich");
-        pemasok.setAlmPemasok1("Jl. Flamboyan 4 desa tanjung sawit");
-        pemasok.setAlmPemasok2("kec. Tapung kab. Kampar Riau Indonesia");
-        pemasok.setEmailPemasok("bayern.munich@gmail.com");
+        pemasok.setId(strPemasokId2);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","SPEK-HAM"));
+        pemasok.setNmPemasok("SPEK-HAM");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("SPEK-HAM@gmail.com");
 
         result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
+        /*insert master 1*/
 
-        strPembelianId = UUID.randomUUID().toString();
-        pembelian.setId(strPembelianId);
-        pembelian.setNoPembelian(CodeGenerator.input("BLI","Jordan Bell"));
+        var strUUID = UUID.randomUUID().toString();
+
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Jamie Vardy"));
         pembelian.setTglPembelian(sqlDate);
-        pembelian.setKdPemasok(strPemasokId);
+        pembelian.setKdPemasok(strPemasokId1);
 
         result = pembelianRepository.add(pembelian);
         assertEquals(1,result);
 
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Pierre-Emerick Aubameyang"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId2);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        Pembelian[] pembelians = pembelianRepository.getById(strUUID);
+        assertEquals(1,pembelians.length);
+    }
+
+    @Test
+    void testGetByIdFailedIdNotFound() {
+
+        /*insert master 1*/
+        var strPemasokId1 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId1);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Legal Resources Center"));
+        pemasok.setNmPemasok("Legal Resources Center");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lrc.kjham@gmail.com");
+
+        var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        var strPemasokId2 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId2);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","UPIPA Wonosobo"));
+        pemasok.setNmPemasok("UPIPA Wonosobo");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("upipa.wonosobo@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+        /*insert master 1*/
+
+        var strUUID = UUID.randomUUID().toString();
+
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","João Félix"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId1);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Ángel Di María"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId2);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        Pembelian[] pembelians = pembelianRepository.getById(UUID.randomUUID().toString());
+        assertEquals(0,pembelians.length);
+    }
+
+    @Test
+    void testGetAllSuccess() {
+
+        /*insert master 1*/
+        var strPemasokId1 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId1);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","WCC Lentera Perempuan Purwokerto"));
+        pemasok.setNmPemasok("WCC Lentera Perempuan Purwokerto");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("wcc.lentera.purwokerto@gmail.com");
+
+        var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        var strPemasokId2 = UUID.randomUUID().toString();
+
+        pemasok.setId(strPemasokId2);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","LBH APIK Semarang"));
+        pemasok.setNmPemasok("LBH APIK Semarang");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lbh.apik.semarang@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+        /*insert master 1*/
+
+        var strUUID = UUID.randomUUID().toString();
+
+        pembelian.setId(strUUID);
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Paulo Dybala"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId1);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+        pembelian.setId(UUID.randomUUID().toString());
+        pembelian.setNoPembelian(CodeGenerator.input("BLI","Leon Goretzka"));
+        pembelian.setTglPembelian(sqlDate);
+        pembelian.setKdPemasok(strPemasokId2);
+
+        result = pembelianRepository.add(pembelian);
+        assertEquals(1,result);
+
+
         Pembelian[] pembelians = pembelianRepository.getAll();
         assertTrue(pembelians.length > 0);
-
     }
+
+    @Test
+    void testGetAllFailedNoDataFound() {
+        pembelianRepository.removeAll();
+        pemasokRepository.removeAll();
+        Pembelian[] pembelians = pembelianRepository.getAll();
+        assertEquals(0, pembelians.length);
+    }
+
 }

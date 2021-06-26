@@ -12,5 +12,7 @@ public interface PembelianRepository {
 
     int removeById(String id);
 
+    int removeAll();
+
     int updateById(Pembelian pembelian);
 }

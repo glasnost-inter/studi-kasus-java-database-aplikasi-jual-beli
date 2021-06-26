@@ -121,6 +121,21 @@ public class PembelianRepositoryImpl implements PembelianRepository{
     }
 
     @Override
+    public int removeAll() {
+        String sql = "DELETE FROM pembelian";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            return statement.executeUpdate();
+        } catch (SQLException exception) {
+            //throw new RuntimeException(exception);
+            System.out.println("Pesan eror : "+exception);
+            return -1;
+        }
+    }
+
+    @Override
     public int updateById(Pembelian pembelian) {
         String sql = "update pembelian " +
                 "set nopembelian = ? ,"+

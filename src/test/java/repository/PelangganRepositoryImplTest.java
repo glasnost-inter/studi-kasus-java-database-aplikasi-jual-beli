@@ -2,7 +2,6 @@ package repository;
 
 import com.zaxxer.hikari.HikariDataSource;
 import entity.Pelanggan;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import util.CodeGenerator;
@@ -15,81 +14,115 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PelangganRepositoryImplTest {
     private HikariDataSource dataSource;
+
+    private Pelanggan pelanggan;
     private PelangganRepository pelangganRepository;
+
+    private PenjualanRepository penjualanRepository;
 
     @BeforeEach
     void setUp() {
         dataSource = DatabaseUtil.getDataSource();
+
+        penjualanRepository = new PenjualanRepositoryImpl(dataSource);
+        penjualanRepository.removeAll();
+
+        pelanggan = new Pelanggan();
         pelangganRepository = new PelangganRepositoryImpl(dataSource);
+        pelangganRepository.removeAll();
+
+
     }
 
     @Test
-    void testAdd_success() {
-        Pelanggan pelanggan = new Pelanggan();
+    void testAddSuccess() {
 
         pelanggan.setId(UUID.randomUUID().toString());
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Sjafril Effendi"));
-        pelanggan.setNmPelanggan("Sjafril Effendi");
-        pelanggan.setAlmPelanggan1("Tanjung Priok");
-        pelanggan.setAlmPelanggan2("Jakarta Utara");
-        pelanggan.setEmailPelanggan("sjafril.effendi@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Robert Lewandowski"));
+        pelanggan.setNmPelanggan("Robert Lewandowski");
+        pelanggan.setAlmPelanggan1("Jln. Tgk. Daud No. 147 ");
+        pelanggan.setAlmPelanggan2("Bukit Panggoi Indah Kota Lhokseumawe");
+        pelanggan.setEmailPelanggan("robert.lewandowski@gmail.com");
 
         var result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
 
         pelanggan.setId(UUID.randomUUID().toString());
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Ang Harry Tjahjono"));
-        pelanggan.setNmPelanggan("Ang Harry Tjahjono");
-        pelanggan.setAlmPelanggan1("Urip Sumoharjo");
-        pelanggan.setAlmPelanggan2("Karampuang");
-        pelanggan.setEmailPelanggan("ang.harry@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Lionel Messi"));
+        pelanggan.setNmPelanggan("Lionel Messi");
+        pelanggan.setAlmPelanggan1("Jl. Sisingamangaraja No. 39/123");
+        pelanggan.setAlmPelanggan2("Kampung Mulia, Banda Aceh");
+        pelanggan.setEmailPelanggan("lionel.messi@gmail.com");
 
         result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
-
     }
 
     @Test
-    void testAdd_failed() {
-        Pelanggan pelanggan = new Pelanggan();
+    void testAddFailedToViolatePK() {
 
         var strUUID = UUID.randomUUID().toString();
 
         pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Patrick Cao"));
-        pelanggan.setNmPelanggan("Patrick Cao");
-        pelanggan.setAlmPelanggan1("Komplek Villa Pamulang");
-        pelanggan.setAlmPelanggan2("Cluster Bellarosa");
-        pelanggan.setEmailPelanggan("patrick.cao@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Cristiano Ronaldo"));
+        pelanggan.setNmPelanggan("Cristiano Ronaldo");
+        pelanggan.setAlmPelanggan1("Jl. Thamrin No.53A");
+        pelanggan.setAlmPelanggan2("Kab. Deli Serdang Sumatera Utara");
+        pelanggan.setEmailPelanggan("cristiano.ronaldo@gmail.com");
 
         var result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
 
         pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Andika Hirlanda Putra"));
-        pelanggan.setNmPelanggan("Andika Hirlanda Putra");
-        pelanggan.setAlmPelanggan1("Lion Parcel Mega");
-        pelanggan.setAlmPelanggan2("Bekasi Hypermall");
-        pelanggan.setEmailPelanggan("andika.hirlanda@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Kevin De Bruyne"));
+        pelanggan.setNmPelanggan("Kevin De Bruyne");
+        pelanggan.setAlmPelanggan1("Jl. Jermal V No. 1 C");
+        pelanggan.setAlmPelanggan2("Kelurahan Denai Kecamatan Medan Denai");
+        pelanggan.setEmailPelanggan("kevin.de.bruyne@gmail.com");
+
+        result = pelangganRepository.add(pelanggan);
+        assertEquals(-1,result);
+    }
+
+    @Test
+    void testAddFailedToViolateUniqConst() {
+
+        var strUUID = UUID.randomUUID().toString();
+
+        pelanggan.setId(strUUID);
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Sadio Mané"));
+        pelanggan.setNmPelanggan("Sadio Mané");
+        pelanggan.setAlmPelanggan1("Perumahan Ganda Asri N 19 J");
+        pelanggan.setAlmPelanggan2("Kabupaten Labuhanbatu Provinsi Sumatera Utara");
+        pelanggan.setEmailPelanggan("sadio.mané@gmail.com");
+
+        var result = pelangganRepository.add(pelanggan);
+        assertEquals(1,result);
+
+        pelanggan.setId(UUID.randomUUID().toString());
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Sadio Mané"));
+        pelanggan.setNmPelanggan("Sadio Mané");
+        pelanggan.setAlmPelanggan1("Jl. Ramli II No. 21");
+        pelanggan.setAlmPelanggan2("Perumnas Simalingkar");
+        pelanggan.setEmailPelanggan("erling.braut.haaland@gmail.com");
 
         result = pelangganRepository.add(pelanggan);
         assertEquals(-1,result);
 
     }
 
-    @Test
-    void testDelete_success() {
 
-        Pelanggan pelanggan = new Pelanggan();
+    @Test
+    void testDeleteSuccess() {
 
         var strUUID = UUID.randomUUID().toString();
 
         pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Majid Abbara"));
-        pelanggan.setNmPelanggan("Majid Abbara");
-        pelanggan.setAlmPelanggan1("Perum Klipang Blk");
-        pelanggan.setAlmPelanggan2("Sendang Jaya");
-        pelanggan.setEmailPelanggan("majdi.abbara@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Kylian Mbappé"));
+        pelanggan.setNmPelanggan("Kylian Mbappé");
+        pelanggan.setAlmPelanggan1("Jalan Pasar VII No. 156");
+        pelanggan.setAlmPelanggan2("Padang Bulan. Medan");
+        pelanggan.setEmailPelanggan("kylian.mbappé@gmail.com");
 
         var result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
@@ -99,50 +132,44 @@ public class PelangganRepositoryImplTest {
     }
 
     @Test
-    void testDelete_failed() {
+    void testDeleteFailedIdNotFound() {
 
-        Pelanggan pelanggan = new Pelanggan();
-
-        var strUUID = UUID.randomUUID().toString();
-
-        pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Majid Abbara"));
-        pelanggan.setNmPelanggan("Majid Abbara");
-        pelanggan.setAlmPelanggan1("Perum Klipang Blk");
-        pelanggan.setAlmPelanggan2("Sendang Jaya");
-        pelanggan.setEmailPelanggan("majdi.abbara@gmail.com");
+        pelanggan.setId(UUID.randomUUID().toString());
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Mohamed Salah"));
+        pelanggan.setNmPelanggan("Mohamed Salah");
+        pelanggan.setAlmPelanggan1("Perum Anggrek Permai Blok K No 22 Baloi Kecamatan");
+        pelanggan.setAlmPelanggan2("Lubuk Baja Kota Batam Kepulauan Riau");
+        pelanggan.setEmailPelanggan("mohamed.salah@gmail.com");
 
         var result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
 
         result = pelangganRepository.removeById(UUID.randomUUID().toString());
-
         assertEquals(0,result);
     }
 
-    @Test
-    void testUpdate_success() {
 
-        Pelanggan pelanggan = new Pelanggan();
+    @Test
+    void testUpdateSuccess() {
 
         var strUUID = UUID.randomUUID().toString();
 
         pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Mathew Sueoka"));
-        pelanggan.setNmPelanggan("Mathew Sueoka");
-        pelanggan.setAlmPelanggan1("Trio LT1");
-        pelanggan.setAlmPelanggan2("Mampang Prapatan");
-        pelanggan.setEmailPelanggan("mathew.sueoka@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Neymar"));
+        pelanggan.setNmPelanggan("Neymar");
+        pelanggan.setAlmPelanggan1("Dsn Marga Mulya/I Desa Pulau Tujuh");
+        pelanggan.setAlmPelanggan2("Kec. Pamenang Barat");
+        pelanggan.setEmailPelanggan("neymar@gmail.com");
 
         var result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
 
         pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Mathew Sueoka, Msc"));
-        pelanggan.setNmPelanggan("Mathew Sueoka, Msc");
-        pelanggan.setAlmPelanggan1("Komplek Triloka");
-        pelanggan.setAlmPelanggan2("Pancoran Barat");
-        pelanggan.setEmailPelanggan("mathew.sueoka.leon@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Virgil van Dijk"));
+        pelanggan.setNmPelanggan("Virgil van Dijk");
+        pelanggan.setAlmPelanggan1("Jl. Pekanbaru II No. 28 D");
+        pelanggan.setAlmPelanggan2("Kec. Padang Utara, Kota Padang");
+        pelanggan.setEmailPelanggan("virgil.van.dijk@gmail.com");
 
 
         result = pelangganRepository.updateById(pelanggan);
@@ -150,96 +177,125 @@ public class PelangganRepositoryImplTest {
     }
 
     @Test
-    void testUpdate_failed() {
+    void testUpdateFailedIdNotFound() {
 
-        Pelanggan pelanggan = new Pelanggan();
-
-        var strUUID = UUID.randomUUID().toString();
-
-        pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Rupsa Pandit"));
-        pelanggan.setNmPelanggan("Rupsa Pandit");
-        pelanggan.setAlmPelanggan1("D.I Panjaitan");
-        pelanggan.setAlmPelanggan2("Rawa Bunga");
-        pelanggan.setEmailPelanggan("rupsa.pandit@gmail.com");
+        pelanggan.setId(UUID.randomUUID().toString());
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Joshua Kimmich"));
+        pelanggan.setNmPelanggan("Joshua Kimmich");
+        pelanggan.setAlmPelanggan1("Jln Indragiri 1 No.3 Kel. Padang Harapan");
+        pelanggan.setAlmPelanggan2("Kec. Gading Cempaka Kota Bengkulu");
+        pelanggan.setEmailPelanggan("joshua.kimmich@gmail.com");
 
         var result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
 
         pelanggan.setId(UUID.randomUUID().toString());
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Rupsa Pandit, Phd"));
-        pelanggan.setNmPelanggan("Rupsa Pandit, Phd");
-        pelanggan.setAlmPelanggan1("Berawa Beach");
-        pelanggan.setAlmPelanggan2("Tibu Beneng");
-        pelanggan.setEmailPelanggan("rupsa.pandit@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Karim Benzema"));
+        pelanggan.setNmPelanggan("Karim Benzema");
+        pelanggan.setAlmPelanggan1("Jl. Kesehatan 1 No. 06 RT 02");
+        pelanggan.setAlmPelanggan2("Anggut Bawah Kecamatan Ratu Kota Bengkulu");
+        pelanggan.setEmailPelanggan("karim.benzema@gmail.com");
 
 
         result = pelangganRepository.updateById(pelanggan);
         assertEquals(0,result);
     }
 
-    @Test
-    void testGetById_success() {
 
-        Pelanggan pelanggan = new Pelanggan();
+    @Test
+    void testGetByIdSuccess() {
 
         var strUUID = UUID.randomUUID().toString();
 
         pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Harshita Singh"));
-        pelanggan.setNmPelanggan("Harshita Singh");
-        pelanggan.setAlmPelanggan1("Jend A Yani");
-        pelanggan.setAlmPelanggan2("Teuku Umar");
-        pelanggan.setEmailPelanggan("harshita.singh@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Sergio Ramos"));
+        pelanggan.setNmPelanggan("Sergio Ramos");
+        pelanggan.setAlmPelanggan1("Jalan Musi 3 Blok H68");
+        pelanggan.setAlmPelanggan2("Kecamatan Ilir Barat I Palembang");
+        pelanggan.setEmailPelanggan("sergio.ramos@gmail.com");
 
         var result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
 
         pelanggan.setId(UUID.randomUUID().toString());
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Melisha Siska Juminto"));
-        pelanggan.setNmPelanggan("Melisha Siska Juminto");
-        pelanggan.setAlmPelanggan1("Tasik Indah Plaza");
-        pelanggan.setAlmPelanggan2("Ki Ageng Gribig");
-        pelanggan.setEmailPelanggan("melisha.siska.juminto@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Thomas Müller"));
+        pelanggan.setNmPelanggan("Thomas Müller");
+        pelanggan.setAlmPelanggan1("Jl. Bidar Blok B no.6");
+        pelanggan.setAlmPelanggan2("Kampus Palembang 30137");
+        pelanggan.setEmailPelanggan("thomas.müller@gmail.com");
 
         result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
-
 
         Pelanggan[] pelanggans = pelangganRepository.getById(strUUID);
         assertEquals(1,pelanggans.length);
     }
 
     @Test
-    void testGetAll_success() {
+    void testGetByIdFailedIdNotFound() {
 
-        Pelanggan pelanggan = new Pelanggan();
-
-        var strUUID = UUID.randomUUID().toString();
-
-        pelanggan.setId(strUUID);
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Feri Aris Rinaldi"));
-        pelanggan.setNmPelanggan("Feri Aris Rinaldi");
-        pelanggan.setAlmPelanggan1("May Ruslan III");
-        pelanggan.setAlmPelanggan2("Gatot Subroto");
-        pelanggan.setEmailPelanggan("feri.aris.rinaldi@gmail.com");
+        pelanggan.setId(UUID.randomUUID().toString());
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Manuel Neuer"));
+        pelanggan.setNmPelanggan("Manuel Neuer");
+        pelanggan.setAlmPelanggan1("Jl. Kenangan No. 253");
+        pelanggan.setAlmPelanggan2("Pangkal Pinang");
+        pelanggan.setEmailPelanggan("manuel.neuer@gmail.com");
 
         var result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
 
         pelanggan.setId(UUID.randomUUID().toString());
-        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Wisudo Harsanto"));
-        pelanggan.setNmPelanggan("Wisudo Harsanto");
-        pelanggan.setAlmPelanggan1("Arif Margono");
-        pelanggan.setAlmPelanggan2("Raya Mandala 14");
-        pelanggan.setEmailPelanggan("wisudo.harsanto@gmail.com");
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Serge Gnabry"));
+        pelanggan.setNmPelanggan("Serge Gnabry");
+        pelanggan.setAlmPelanggan1("Jl. MH. Thamrin No. 14 Gotong Royong");
+        pelanggan.setAlmPelanggan2("Tanjung Karang Pusat, Bandar Lampung");
+        pelanggan.setEmailPelanggan("serge.gnabry@gmail.com");
 
         result = pelangganRepository.add(pelanggan);
         assertEquals(1,result);
 
 
-        Pelanggan[] pelanggans = pelangganRepository.getById(strUUID);
+        Pelanggan[] pelanggans = pelangganRepository.getById(UUID.randomUUID().toString());
+        assertEquals(0,pelanggans.length);
+    }
+
+    @Test
+    void testGetAllSuccess() {
+
+        var strUUID = UUID.randomUUID().toString();
+
+        pelanggan.setId(strUUID);
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Thiago Alcântara"));
+        pelanggan.setNmPelanggan("Thiago Alcântara");
+        pelanggan.setAlmPelanggan1("Tanjung Priok");
+        pelanggan.setAlmPelanggan2("Jakarta Utara");
+        pelanggan.setEmailPelanggan("thiago.alcântara@gmail.com");
+
+        var result = pelangganRepository.add(pelanggan);
+        assertEquals(1,result);
+
+        pelanggan.setId(UUID.randomUUID().toString());
+        pelanggan.setKdPelanggan(CodeGenerator.input("PLG","Trent Alexander-Arnold"));
+        pelanggan.setNmPelanggan("Trent Alexander-Arnold");
+        pelanggan.setAlmPelanggan1("Perumahan Puri Kartika B-5 No. 14 Banjarsari");
+        pelanggan.setAlmPelanggan2("cipocok jaya, kota Serang");
+        pelanggan.setEmailPelanggan("trent.alexander-arnold@gmail.com");
+
+        result = pelangganRepository.add(pelanggan);
+        assertEquals(1,result);
+
+
+        Pelanggan[] pelanggans = pelangganRepository.getAll();
         assertTrue(pelanggans.length > 0);
     }
 
+    @Test
+    void testGetAllFailedNoDataFound() {
+        pelangganRepository.removeAll();
+        Pelanggan[] pelanggans = pelangganRepository.getAll();
+        assertEquals(0, pelanggans.length);
+    }
+
 }
+
+

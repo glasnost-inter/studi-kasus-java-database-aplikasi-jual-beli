@@ -11,5 +11,7 @@ public interface PenjualanRepository {
 
     int removeById(String id);
 
+    int removeAll();
+
     int updateById(Penjualan penjualan);
 }

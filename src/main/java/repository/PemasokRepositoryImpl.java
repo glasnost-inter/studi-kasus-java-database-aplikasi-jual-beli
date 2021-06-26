@@ -130,6 +130,21 @@ public class PemasokRepositoryImpl implements PemasokRepository{
     }
 
     @Override
+    public int removeAll() {
+        String sql = "DELETE FROM Pemasok";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            return statement.executeUpdate();
+        } catch (SQLException exception) {
+            //throw new RuntimeException(exception);
+            System.out.println("Pesan eror : "+exception);
+            return -1;
+        }
+    }
+
+    @Override
     public int updateById(Pemasok pemasok) {
         String sql = "update Pemasok " +
                 "set kdpemasok = ? ,"+

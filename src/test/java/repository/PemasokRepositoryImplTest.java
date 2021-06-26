@@ -15,77 +15,111 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PemasokRepositoryImplTest {
 
     private HikariDataSource dataSource;
+    private Pemasok pemasok;
     private PemasokRepository pemasokRepository;
+    private PembelianRepository pembelianRepository;
 
     @BeforeEach
     void setUp() {
         dataSource = DatabaseUtil.getDataSource();
+
+        pembelianRepository = new PembelianRepositoryImpl(dataSource);
+        pembelianRepository.removeAll();
+
+        pemasok = new Pemasok();
         pemasokRepository = new PemasokRepositoryImpl(dataSource);
+        pemasokRepository.removeAll();
     }
 
     @Test
-    void testAdd_success() {
-        Pemasok pemasok = new Pemasok();
+    void testAddSuccess() {
 
         pemasok.setId(UUID.randomUUID().toString());
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Riau Webhost Indonesia"));
-        pemasok.setNmPemasok("Riau Webhost Indonesia");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","LBH Apik Aceh"));
+        pemasok.setNmPemasok("LBH Apik Aceh");
         pemasok.setAlmPemasok1("Jl Melati I");
         pemasok.setAlmPemasok2("Sidomulyo");
-        pemasok.setEmailPemasok("riau.webhost.indonesia@gmail.com");
+        pemasok.setEmailPemasok("lbh.apik.aceh@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
         pemasok.setId(UUID.randomUUID().toString());
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Lion Parcel"));
-        pemasok.setNmPemasok("Lion Parcel");
-        pemasok.setAlmPemasok1("Mega Bekasi");
-        pemasok.setAlmPemasok2("Hypermall");
-        pemasok.setEmailPemasok("lion.parcel@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","RPUK Banda Aceh"));
+        pemasok.setNmPemasok("RPUK Banda Aceh");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("rpuk.banda.aceh@gmail.com");
 
         result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
-
     }
 
     @Test
-    void testAdd_failed() {
-        Pemasok pemasok = new Pemasok();
+    void testAddFailedToViolatePK() {
 
         var strUUID = UUID.randomUUID().toString();
+
         pemasok.setId(strUUID);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Master Mind Indonesia"));
-        pemasok.setNmPemasok("Master Mind Indonesia");
-        pemasok.setAlmPemasok1("Tebet Raya No 16");
-        pemasok.setAlmPemasok2("Tebet Timur");
-        pemasok.setEmailPemasok("master.mind.indonesia@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Himpunan Serikat Perempuan Indonesia"));
+        pemasok.setNmPemasok("Himpunan Serikat Perempuan Indonesia");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("himpunan.serikat.perempuan.indonesia@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
         pemasok.setId(strUUID);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Herumindset"));
-        pemasok.setNmPemasok("Herumindset");
-        pemasok.setAlmPemasok1("Cihideung Ilir");
-        pemasok.setAlmPemasok2("Pamulang");
-        pemasok.setEmailPemasok("herumindset@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","LBH APIK Medan"));
+        pemasok.setNmPemasok("LBH APIK Medan");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lbh.apik.medan@gmail.com");
 
         result = pemasokRepository.add(pemasok);
         assertEquals(-1,result);
     }
 
     @Test
-    void testDelete_success() {
-        Pemasok pemasok = new Pemasok();
+    void testAddFailedToViolateUniqConst() {
 
         var strUUID = UUID.randomUUID().toString();
+
         pemasok.setId(strUUID);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Pamulang Rental Mobil"));
-        pemasok.setNmPemasok("Pamulang Rental Mobil");
-        pemasok.setAlmPemasok1("Komplek Vila Pamulang");
-        pemasok.setAlmPemasok2("Cluster Bellarosa");
-        pemasok.setEmailPemasok("pamulang.rental.mobil@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Serikat Perempuan Independen"));
+        pemasok.setNmPemasok("Serikat Perempuan Independen");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("labuhanbatu@gmail.com");
+
+        var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        pemasok.setId(UUID.randomUUID().toString());
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Perkumpulan Peduli Medan"));
+        pemasok.setNmPemasok("Serikat Perempuan Independen");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("perkumpulan.peduli.medan@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
+        assertEquals(-1,result);
+
+    }
+
+
+    @Test
+    void testDeleteSuccess() {
+
+        var strUUID = UUID.randomUUID().toString();
+
+        pemasok.setId(strUUID);
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Aliansi Sumut Bersatu (ASB) Medan"));
+        pemasok.setNmPemasok("Aliansi Sumut Bersatu (ASB) Medan");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("liansi.sumut.bersatu.medan@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
@@ -95,15 +129,14 @@ public class PemasokRepositoryImplTest {
     }
 
     @Test
-    void testDelete_failed() {
-        Pemasok pemasok = new Pemasok();
+    void testDeleteFailedIdNotFound() {
 
         pemasok.setId(UUID.randomUUID().toString());
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Stane Felica Interior Design"));
-        pemasok.setNmPemasok("Stane Felica Interior Design");
-        pemasok.setAlmPemasok1("The OAK Tower Appartment");
-        pemasok.setAlmPemasok2("Jl Perintis Kemerdekaan");
-        pemasok.setEmailPemasok("Stane.felica.interior.design@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Embun Pelangi"));
+        pemasok.setNmPemasok("Embun Pelangi");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("embun.pelangi@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
@@ -112,71 +145,83 @@ public class PemasokRepositoryImplTest {
         assertEquals(0,result);
     }
 
+
     @Test
-    void testUpdate_success() {
-        Pemasok pemasok = new Pemasok();
+    void testUpdateSuccess() {
 
         var strUUID = UUID.randomUUID().toString();
+
         pemasok.setId(strUUID);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Wuling Arista Cimone"));
-        pemasok.setNmPemasok("Wuling Arista Cimone");
-        pemasok.setAlmPemasok1("Nn no.16");
-        pemasok.setAlmPemasok2("RT 005/001 Cimone");
-        pemasok.setEmailPemasok("wuling.arista.cimone@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Aliansi Perempuan Merangin"));
+        pemasok.setNmPemasok("Aliansi Perempuan Merangin");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("aliansi.perempuan.merangin@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
         pemasok.setId(strUUID);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Wuling Arista Cijantung"));
-        pemasok.setNmPemasok("Wuling Arista Cijantung");
-        pemasok.setAlmPemasok1("Nona no.16");
-        pemasok.setAlmPemasok2("RT 005/001 Cimoneng");
-        pemasok.setEmailPemasok("wuling.arista.cimoneng@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","WCC Nurani Perempuan"));
+        pemasok.setNmPemasok("WCC Nurani Perempuan");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("wcc.nurani.perempuan@gmail.com");
+
 
         result = pemasokRepository.updateById(pemasok);
         assertEquals(1,result);
     }
 
     @Test
-    void testUpdate_failed() {
-        Pemasok pemasok = new Pemasok();
+    void testUpdateFailedIdNotFound() {
 
         pemasok.setId(UUID.randomUUID().toString());
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","IndiHome Telkom"));
-        pemasok.setNmPemasok("IndiHome Telkom");
-        pemasok.setAlmPemasok1("Jl. Mayor Kusmanto No.1");
-        pemasok.setAlmPemasok2("Kedung Lumbu");
-        pemasok.setEmailPemasok("indihome.telkom@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Cahaya Perempuan WCC"));
+        pemasok.setNmPemasok("Cahaya Perempuan WCC");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("cahaya.perempuan.wcc@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
         pemasok.setId(UUID.randomUUID().toString());
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","IndiHome Telkom Indonesia"));
-        pemasok.setNmPemasok("IndiHome Telkom Indonesia");
-        pemasok.setAlmPemasok1("Jl Trunojoyo 31");
-        pemasok.setAlmPemasok2("Kedung Lumbuew");
-        pemasok.setEmailPemasok("indiHome.telkom.indonesia@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Pendidikan Untuk Perempuan dan Anak"));
+        pemasok.setNmPemasok("Pendidikan Untuk Perempuan dan Anak");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("pendidikan.untuk.perempuan.dan.anak@gmail.com");
+
 
         result = pemasokRepository.updateById(pemasok);
         assertEquals(0,result);
     }
 
+
     @Test
-    void testGetById_success() {
-        Pemasok pemasok = new Pemasok();
+    void testGetByIdSuccess() {
 
         var strUUID = UUID.randomUUID().toString();
 
         pemasok.setId(strUUID);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Asia Computer"));
-        pemasok.setNmPemasok("Asia Computer");
-        pemasok.setAlmPemasok1("Jl Kalimantan 68");
-        pemasok.setAlmPemasok2("Laks L RE Martadinata 42-D");
-        pemasok.setEmailPemasok("asia.computer@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","WCC Palembang"));
+        pemasok.setNmPemasok("WCC Palembang");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("wcc.palembang@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        pemasok.setId(UUID.randomUUID().toString());
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","LBH Palembang"));
+        pemasok.setNmPemasok("LBH Palembang");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lbh.palembang@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
 
         Pemasok[] pemasoks = pemasokRepository.getById(strUUID);
@@ -184,25 +229,72 @@ public class PemasokRepositoryImplTest {
     }
 
     @Test
-    void testGetAll_success() {
+    void testGetByIdFailedIdNotFound() {
 
-        Pemasok pemasok = new Pemasok();
+        pemasok.setId(UUID.randomUUID().toString());
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","LSM Perlindungan dan Pemberdayaan"));
+        pemasok.setNmPemasok("LSM Perlindungan dan Pemberdayaan");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lsm.perlindungan@gmail.com");
+
+        var result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+        pemasok.setId(UUID.randomUUID().toString());
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Lembaga Advokasi Perempuan Damar"));
+        pemasok.setNmPemasok("Lembaga Advokasi Perempuan Damar");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lembaga.advokasi.perempuan.damar@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
+
+        Pemasok[] pemasoks = pemasokRepository.getById(UUID.randomUUID().toString());
+        assertEquals(0,pemasoks.length);
+    }
+
+    @Test
+    void testGetAllSuccess() {
 
         var strUUID = UUID.randomUUID().toString();
 
         pemasok.setId(strUUID);
-        pemasok.setKdPemasok(CodeGenerator.input("PMK","Toho Computer"));
-        pemasok.setNmPemasok("Toho Computer");
-        pemasok.setAlmPemasok1("Jl Jend Sudirman Psr Bersama");
-        pemasok.setAlmPemasok2("Pramuka Ruko Baru");
-        pemasok.setEmailPemasok("toho.computer@gmail.com");
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","LBH APIK Banten"));
+        pemasok.setNmPemasok("LBH APIK Banten");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("lbh.apik.banten@gmail.com");
 
         var result = pemasokRepository.add(pemasok);
         assertEquals(1,result);
+
+        pemasok.setId(UUID.randomUUID().toString());
+        pemasok.setKdPemasok(CodeGenerator.input("PMK","Yayasan LBH Keadilan Banten"));
+        pemasok.setNmPemasok("Yayasan LBH Keadilan Banten");
+        pemasok.setAlmPemasok1("Jl Melati I");
+        pemasok.setAlmPemasok2("Sidomulyo");
+        pemasok.setEmailPemasok("yayasan.lbh.keadilan.banten@gmail.com");
+
+        result = pemasokRepository.add(pemasok);
+        assertEquals(1,result);
+
 
         Pemasok[] pemasoks = pemasokRepository.getAll();
         assertTrue(pemasoks.length > 0);
     }
 
+    @Test
+    void testGetAllFailedNoDataFound() {
+        pemasokRepository.removeAll();
+        Pemasok[] pemasoks = pemasokRepository.getAll();
+        assertEquals(0, pemasoks.length);
+    }
 
 }
+
+
+
+

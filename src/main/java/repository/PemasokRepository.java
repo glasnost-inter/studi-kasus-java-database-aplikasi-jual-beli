@@ -12,6 +12,8 @@ public interface PemasokRepository {
 
     int removeById(String id);
 
+    int removeAll();
+
     int updateById(Pemasok pemasok);
 
 }

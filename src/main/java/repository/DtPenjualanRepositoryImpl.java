@@ -125,6 +125,21 @@ public class DtPenjualanRepositoryImpl implements DtPenjualanRepository{
     }
 
     @Override
+    public int removeAll() {
+        String sql = "DELETE FROM dtPenjualan";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            return statement.executeUpdate();
+        } catch (SQLException exception) {
+            //throw new RuntimeException(exception);
+            System.out.println("Pesan eror : "+exception);
+            return -1;
+        }
+    }
+
+    @Override
     public int updateById(DtPenjualan dtPenjualan) {
         String sql = "update dtPenjualan " +
                 "set idpenjualan = ? ,"+

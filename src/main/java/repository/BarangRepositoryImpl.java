@@ -127,6 +127,21 @@ public class BarangRepositoryImpl implements BarangRepository{
     }
 
     @Override
+    public int removeAll() {
+        String sql = "DELETE FROM barang";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            return statement.executeUpdate();
+        } catch (SQLException exception) {
+            //throw new RuntimeException(exception);
+            System.out.println("Pesan eror : "+exception);
+            return -1;
+        }
+    }
+
+    @Override
     public int updateById(Barang barang) {
         String sql = "update barang " +
                      "set kdbrg = ? ,"+

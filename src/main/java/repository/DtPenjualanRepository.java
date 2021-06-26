@@ -11,5 +11,7 @@ public interface DtPenjualanRepository {
 
     int removeById(String id);
 
+    int removeAll();
+
     int updateById(DtPenjualan dtPenjualan);
 }

@@ -130,6 +130,21 @@ public class PelangganRepositoryImpl implements PelangganRepository{
     }
 
     @Override
+    public int removeAll() {
+        String sql = "DELETE FROM Pelanggan";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            return statement.executeUpdate();
+        } catch (SQLException exception) {
+            //throw new RuntimeException(exception);
+            System.out.println("Pesan eror : "+exception);
+            return -1;
+        }
+    }
+
+    @Override
     public int updateById(Pelanggan pelanggan) {
         String sql = "update Pelanggan " +
                 "set kdpelanggan = ? ,"+
