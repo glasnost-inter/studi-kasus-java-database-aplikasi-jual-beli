@@ -1,0 +1,6 @@
+repository\PelangganRepositoryImplTest.class
+util\CodeGeneratorTest.class
+util\DatabaseUtilTest.class
+repository\PembelianRepositoryImplTest.class
+repository\BarangRepositoryImplTest.class
+repository\PemasokRepositoryImplTest.class
